@@ -73,8 +73,9 @@ class StoryList {
    * Returns the new Story instance
    */
 
-  async addStory( /* user, newStory */) {
+  async addStory(user, {title, author, url}) {
     // UNIMPLEMENTED: complete this function!
+    console.log(user);
   }
 }
 
