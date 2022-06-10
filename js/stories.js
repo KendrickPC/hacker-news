@@ -67,12 +67,12 @@ async function submitStory(evt) {
   // console.log(newStoryData);
 
   const newStory = await storyList.addStory(currentUser, newStoryData);
-  console.log(newStory);
-  // const $newStory = generateStoryMarkup(newStory);
-  // $allStoriesList.prepend($newStory);
+  // console.log(newStory);
+  const $newStory = generateStoryMarkup(newStory);
+  $allStoriesList.prepend($newStory);
 
-  // $newStoryForm.slideUp("slow");
-  // $newStoryForm.trigger("reset");
+  $newStoryForm.slideUp("slow");
+  $newStoryForm.trigger("reset");
 }
 
 $newStoryForm.on("submit", submitStory);

@@ -160,5 +160,33 @@ $newStoryForm.on("submit", submitStory);
 
 6. Need to grab new-story-title, new-story-url, new-story-author, and username:
 ```js
+/* When users submit the form. Gets data from the form, calls the addStory method, and puts new story to page: */
+// Calls addStory on storyList and pass in the currentUser and new story data. Make sure to call await.Store in newStory variable.
+// call generateStoryMarkup with argument of newStory, created above. Save to a variable called $newStory.
+// Add $newStory to top of $allStoriesList 
+// Use slideUp and trigger reset on our $newStoryForm.
+async function submitStory(evt) {
+  console.debug("submitStory from stories.js");
+  // To prevent reloading the page
+  evt.preventDefault();
+  // console.log("submitStory click!")
+  const title = $("#new-story-title").val();
+  const url = $("#new-story-url").val();
+  const author = $("#new-story-author").val();
+  const username = currentUser.username;
+  const newStoryData = {title, url, author, username};
+
+  // console.log(newStoryData);
+
+  const newStory = await storyList.addStory(currentUser, newStoryData);
+  // console.log(newStory);
+  const $newStory = generateStoryMarkup(newStory);
+  $allStoriesList.prepend($newStory);
+
+  $newStoryForm.slideUp("slow");
+  $newStoryForm.trigger("reset");
+}
+
+$newStoryForm.on("submit", submitStory);
 
 ```
