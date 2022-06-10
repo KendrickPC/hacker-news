@@ -75,7 +75,6 @@ class StoryList {
       url: `${BASE_URL}/stories`,
       data: {token, story: {title, author, url}}
     });
-
     const story = new Story(response.data.story);
     // console.log(story);
 

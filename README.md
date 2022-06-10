@@ -96,7 +96,7 @@ getHostName() {
 Now, we’ll add the UI for the story-adding feature:
 
 - Add a form in the HTML for the story. This should initially be hidden.
-1. Creating submit new story form in index.html
+1. Creating submit new story form in index.html. Take out the hidden class in form to test.
 ```html
 <section class="submit-story-container container">
   <form id="new-story-form" class="hidden">
@@ -112,13 +112,20 @@ Now, we’ll add the UI for the story-adding feature:
       <label for="new-story-url">URL: </label>
       <input id="new-story-url" required placeholder="URL">
     </div>
-    <button type-"submit">submit</button>
+    <button type="submit">submit</button>
   </form>
 </section>
 ```
 
-
 - Add a link in the navbar with the text of “submit”.
+2. Check on nav.js file. There is a jQuery call to .main-nav-links class. However, there is no main-nav-links class in our index.html file, so let's make one here.
+```html
+<div class="main-nav-links hidden">
+    <a class="nav-link" href="#" id="nav-submit">submit</a>
+</div>
+```
+
+
 
 - Write a function in nav.js that is called when users click that navbar link. Look at the other function names in that file that do similar things and pick something descriptive and similar.
 
