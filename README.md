@@ -86,3 +86,9 @@ async addStory(user, { title, author, url }) {
 }
 ```
 
+10. Fix hostname.com string when new Story is posted.
+```js
+getHostName() {
+  return this.url;
+}
+```
