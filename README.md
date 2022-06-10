@@ -121,12 +121,38 @@ Now, we’ll add the UI for the story-adding feature:
 2. Check on nav.js file. There is a jQuery call to .main-nav-links class. However, there is no main-nav-links class in our index.html file, so let's make one here.
 ```html
 <div class="main-nav-links hidden">
-    <a class="nav-link" href="#" id="nav-submit">submit</a>
+  <a class="nav-link" href="#" id="nav-submit">submit</a>
 </div>
 ```
 
-
-
 - Write a function in nav.js that is called when users click that navbar link. Look at the other function names in that file that do similar things and pick something descriptive and similar.
+3. Inside main.js, create a jQuery variable to store our nav-submit id:
+```js
+const $navSubmit = $("#nav-submit");
+const $newStoryForm = $("#new-story-form");
+
+```
+4. 
+```js
+/** Show story submit form on clicking story "submit" */
+function navSubmitStoryClick(evt) {
+  console.debug("navSubmitStoryClick", evt);
+  hidePageComponents();
+  $allStoriesList.show();
+  $submitForm.show();
+}
+$navSubmitStory.on("click", navSubmitStoryClick);
+```
 
 - Write a function in stories.js that is called when users submit the form. Pick a good name for it. This function should get the data from the form, call the .addStory method you wrote, and then put that new story on the page.
+5. Create a submitStory function and delegate a click event on it.
+```js
+function submitStory(evt) {
+  console.debug("submitStory from stories.js");
+  console.log("submitStory click!")
+}
+
+$newStoryForm.on("click", submitStory);
+```
+
+6. 

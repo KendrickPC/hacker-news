@@ -50,3 +50,14 @@ function putStoriesOnPage() {
 
   $allStoriesList.show();
 }
+
+
+/* When users submit the form. Gets data from the form, calls the addStory method, and puts new story to page: */
+function submitStory(evt) {
+  console.debug("submitStory from stories.js");
+  // To prevent reloading the page
+  evt.preventDefault();
+  console.log("submitStory click!")
+}
+
+$newStoryForm.on("click", submitStory);
