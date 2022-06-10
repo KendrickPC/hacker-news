@@ -66,7 +66,6 @@ Inside addStory, create a new instance of Story with the new story data.
 ```js
   this.stories.unshift(story);
   // user.ownStories.unshift(story);
-
   return story;
 ```
 
@@ -92,3 +91,35 @@ getHostName() {
   return this.url;
 }
 ```
+
+### Subpart 2B: Building The UI for New Story Form/Add New Story
+Now, we’ll add the UI for the story-adding feature:
+
+- Add a form in the HTML for the story. This should initially be hidden.
+1. Creating submit new story form in index.html
+```html
+<section class="submit-story-container container">
+  <form id="new-story-form" class="hidden">
+    <div>
+      <label for="new-story-author">Author: </label>
+      <input id="new-story-author" required placeholder="Author Name">
+    </div>
+    <div>
+      <label for="new-story-title">Title: </label>
+      <input id="new-story-title" require placeholder="Story Title">
+    </div>
+    <div>
+      <label for="new-story-url">URL: </label>
+      <input id="new-story-url" required placeholder="URL">
+    </div>
+    <button type-"submit">submit</button>
+  </form>
+</section>
+```
+
+
+- Add a link in the navbar with the text of “submit”.
+
+- Write a function in nav.js that is called when users click that navbar link. Look at the other function names in that file that do similar things and pick something descriptive and similar.
+
+- Write a function in stories.js that is called when users submit the form. Pick a good name for it. This function should get the data from the form, call the .addStory method you wrote, and then put that new story on the page.
