@@ -146,13 +146,19 @@ $navSubmitStory.on("click", navSubmitStoryClick);
 
 - Write a function in stories.js that is called when users submit the form. Pick a good name for it. This function should get the data from the form, call the .addStory method you wrote, and then put that new story on the page.
 5. Create a submitStory function and delegate a click event on it.
+js/stories.js
 ```js
 function submitStory(evt) {
   console.debug("submitStory from stories.js");
+  // To prevent reloading the page
+  evt.preventDefault();
   console.log("submitStory click!")
 }
 
-$newStoryForm.on("click", submitStory);
+$newStoryForm.on("submit", submitStory);
 ```
 
-6. 
+6. Need to grab new-story-title, new-story-url, new-story-author, and username:
+```js
+
+```

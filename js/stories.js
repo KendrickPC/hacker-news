@@ -53,11 +53,26 @@ function putStoriesOnPage() {
 
 
 /* When users submit the form. Gets data from the form, calls the addStory method, and puts new story to page: */
-function submitStory(evt) {
+async function submitStory(evt) {
   console.debug("submitStory from stories.js");
   // To prevent reloading the page
   evt.preventDefault();
-  console.log("submitStory click!")
+  // console.log("submitStory click!")
+  const title = $("#new-story-title").val();
+  const url = $("#new-story-url").val();
+  const author = $("#new-story-author").val();
+  const username = currentUser.username;
+  const newStoryData = {title, url, author, username};
+
+  // console.log(newStoryData);
+
+  const newStory = await storyList.addStory(currentUser, newStoryData);
+  console.log(newStory);
+  // const $newStory = generateStoryMarkup(newStory);
+  // $allStoriesList.prepend($newStory);
+
+  // $newStoryForm.slideUp("slow");
+  // $newStoryForm.trigger("reset");
 }
 
-$newStoryForm.on("click", submitStory);
+$newStoryForm.on("submit", submitStory);
