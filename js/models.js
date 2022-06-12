@@ -21,7 +21,6 @@ class Story {
   }
 }
 
-
 /******************************************************************************
  * List of Story instances: used by UI to show story lists in DOM.
  */
@@ -200,4 +199,34 @@ class User {
       return null;
     }
   }
+
+  /** Add a story to the list of user favorites and update the API
+  * - story: a Story instance to add to favorites
+  */
+  static async addUserFavorite(user, id) {
+    await axios({
+      url: `${BASE_URL}/users/${user.username}/favorites/${id}`,
+      method: "POST",
+      data: { token: user.loginToken },
+    });
+  }
+
+  /** Remove a story to the list of user favorites and update the API
+   * - story: the Story instance to remove from favorites
+   */
+  static async userFavoritesDelete(user, id) {
+    await axios({
+      url: `${BASE_URL}/users/${user.username}/favorites/${id}`,
+      method: "DELETE",
+      data: { token: user.loginToken },
+    });
+  }
+
+    /** Return true/false if given Story instance is a favorite of this user. */
+  static findFavorites(story) {
+    return currentUser.favorites.some(
+      item => item.storyId === story.storyId
+    );
+  }
+
 }

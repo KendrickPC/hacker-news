@@ -188,5 +188,62 @@ async function submitStory(evt) {
 }
 
 $newStoryForm.on("submit", submitStory);
+```
+
+### Part 3: Favorite stories
+In this step, you’ll add a feature marking/unmarking a story as a favorite.
+
+As before, it’s best to write the data-logic and API-call part first, and do the UI afterwards.
+
+- [x] I want to build the UI first, and then get something clicking on the screen so that I can can use chrome debut tools:
+
+1. First, I want to build the favorites tab for on the homepage:
+```html
+<a class="nav-link" href="#" id="nav-favorites">favorites</a>
+```
+
+99. Writing data logic of favorites for stories: Starting with js/models.js:
+Inside the User class, I'll start by creating an addFavorites and deleteFavorites methods:
+```js
+  static async addUserFavorite(user, id) {
+    await axios({
+      url: `${BASE_URL}/users/${user.username}/favorites/${id}`,
+      method: "POST",
+      data: { token: user.loginToken },
+    });
+  }
+
+  static async userFavoritesDelete(user, id) {
+    await axios({
+      url: `${BASE_URL}/users/${user.username}/favorites/${id}`,
+      method: "DELETE",
+      data: { token: user.loginToken },
+    });
+  }
+
+  static findFavorites(story) {
+    return currentUser.favorites.some(
+      (element) => element.storyId === story.storyId
+    );
+  }
 
 ```
+
+2. Inside stories.js, iterate through currentUser.favorites ....
+```js
+//**Filter through favorites and add to favorite tab for user to see */
+async function addFavoritetoList() {
+  if (currentUser.favorites.length > 0) {
+    $("#favorite-stories").empty();
+    for (let story of currentUser.favorites) {
+      const favStory = generateStoryMarkup(story);
+      $("#favorite-stories").append(favStory);
+    }
+  } else {
+    $("#favorite-stories").empty();
+    $("#favorite-stories").append(`<h5>You have no favorited stories!</h5>`);
+  }
+}
+```
+
+3. 

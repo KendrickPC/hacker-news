@@ -76,3 +76,54 @@ async function submitStory(evt) {
 }
 
 $newStoryForm.on("submit", submitStory);
+
+//**Filter through favorites and add to favorite tab for user to see */
+async function addFavoritetoList() {
+  if (currentUser.favorites.length > 0) {
+    $("#favorite-stories").empty();
+    for (let story of currentUser.favorites) {
+      const favStory = generateStoryMarkup(story);
+      $("#favorite-stories").append(favStory);
+    }
+  } else {
+    $("#favorite-stories").empty();
+    $("#favorite-stories").append(`<h5>You have no favorited stories!</h5>`);
+  }
+}
+
+/**  see if story is a favorite and update hearts on page */
+function checkforFavoritesandUpdateUI(story) {
+  // /not sure why I had to call user on static function?
+  let heart = "";
+  if (User.findFavorites(story) === true) {
+    heart = "fas";
+  } else {
+    heart = "far";
+  }
+  return `
+      <span class="${heart} fa-heart"></i>
+      </span>`;
+}
+/**When user clicks change the heart and save the favorite/unfavorite it to the api and favorite story array*/
+async function updateFavoriteStoryOnClick(e) {
+  let parentLI = $(e.target).parent();
+  let clickedStoryId = parentLI.attr("id");
+
+  if ($(e.target).hasClass("fas")) {
+    await User.userFavoritesDelete(currentUser, clickedStoryId);
+    $(e.target).removeClass("fas").addClass("far");
+    currentUser.favorites = currentUser.favorites.filter(
+      (element) => element.storyId !== clickedStoryId
+    );
+    addFavoritetoList();
+  } else {
+    await User.userFavorites(currentUser, clickedStoryId);
+    $(e.target).removeClass("far").addClass("fas");
+    const story = storyList.stories.find(
+      (element) => element.storyId === clickedStoryId
+    );
+    currentUser.favorites.push(story);
+    addFavoritetoList();
+  }
+}
+$body.on("click", "span", updateFavoriteStoryOnClick);
