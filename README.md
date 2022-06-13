@@ -190,6 +190,8 @@ async function submitStory(evt) {
 $newStoryForm.on("submit", submitStory);
 ```
 
+7. Inside main.js, inside the hidePageComponents function, add $newStoryForm to the components array.
+
 ### Part 3: Favorite stories
 In this step, you’ll add a feature marking/unmarking a story as a favorite.
 
@@ -202,48 +204,171 @@ As before, it’s best to write the data-logic and API-call part first, and do t
 <a class="nav-link" href="#" id="nav-favorites">favorites</a>
 ```
 
-99. Writing data logic of favorites for stories: Starting with js/models.js:
-Inside the User class, I'll start by creating an addFavorites and deleteFavorites methods:
+2. Make a jQuery variable to our newly created nav-favorites link:
+Inside main.js
 ```js
-  static async addUserFavorite(user, id) {
-    await axios({
-      url: `${BASE_URL}/users/${user.username}/favorites/${id}`,
-      method: "POST",
-      data: { token: user.loginToken },
-    });
-  }
-
-  static async userFavoritesDelete(user, id) {
-    await axios({
-      url: `${BASE_URL}/users/${user.username}/favorites/${id}`,
-      method: "DELETE",
-      data: { token: user.loginToken },
-    });
-  }
-
-  static findFavorites(story) {
-    return currentUser.favorites.some(
-      (element) => element.storyId === story.storyId
-    );
-  }
-
+const $navFavorites = $("#nav-favorites")
 ```
 
-2. Inside stories.js, iterate through currentUser.favorites ....
+3. Make an index.html section for our favorites list:
+```html
+  <!-- List of stories favorited by the user -->
+  <ol id="favorite-stories" class="hidden stories-list"></ol>
+```
+
+4. Make a jQuery call to #favorite-stories:
 ```js
-//**Filter through favorites and add to favorite tab for user to see */
-async function addFavoritetoList() {
-  if (currentUser.favorites.length > 0) {
-    $("#favorite-stories").empty();
+const $favoriteStories = $("#favorite-stories");
+```
+
+5. Add an on("click") event on our newly created favorites nav link. Attach this function to our nav-favorites when clicking.
+Inside nav.js
+```js
+function navFavoritesClick(evt) {
+  console.debug("navFavoritesClick", evt);
+  // console.log("nav favorites click clicked")
+  hidePageComponents();
+  putFavoritesListOnPage();
+}
+$navFavorites.on("click", navFavoritesClick);
+```
+
+6. We gotta write a putFavoritesListOnPage() function here. I've decided 4o place this function inside the js/stories.js file: Here, I can use the putStoriesOnPage() reference to build this one (putFavoritesListOnPage) out...
+
+Template on how to build this out:
+
+```js 
+/** Gets list of stories from server, generates their HTML, and puts on page. */
+
+function putStoriesOnPage() {
+  console.debug("putStoriesOnPage");
+
+  $allStoriesList.empty();
+
+  // loop through all of our stories and generate HTML for them
+  for (let story of storyList.stories) {
+    const $story = generateStoryMarkup(story);
+    $allStoriesList.append($story);
+  }
+
+  $allStoriesList.show();
+}
+```
+ 
+favorites list is stored in currentUser.favorites
+```js
+/******************************************************************************
+ * Functionality for favorites list and starr/un-starr a story
+ */
+/** Put favorites list on page. */
+
+function putFavoritesListOnPage() {
+  console.debug("putFavoritesListOnPage");
+  $favoriteStories.empty();
+  if (currentUser.favorites.length !== 0) {
+    // iterate through currentUser.favorites:
     for (let story of currentUser.favorites) {
-      const favStory = generateStoryMarkup(story);
-      $("#favorite-stories").append(favStory);
+      const $favoriteStory = generateStoryMarkup(favoritedStory);
+      $favoriteStories.append($favoriteStory);
     }
   } else {
-    $("#favorite-stories").empty();
-    $("#favorite-stories").append(`<h5>You have no favorited stories!</h5>`);
+    $favoriteStories.append("<h1>No favorite stories added</h1>");
   }
+  $favoriteStories.show();
 }
 ```
 
-3. 
+7. Write data logic of favorites for stories - start with js/models.js ...
+Inside the User class, create addFavorites and deleteFavorites methods:
+```js
+  /** Add a story to the list of user favorites and update the API
+   * - story: a Story instance to add to favorites
+   */
+
+  async addFavorite(story) {
+    this.favorites.push(story);
+    await this._addOrRemoveFavorite("add", story)
+  }
+
+  /** Remove a story to the list of user favorites and update the API
+   * - story: the Story instance to remove from favorites
+   */
+
+  async removeFavorite(story) {
+    this.favorites = this.favorites.filter(s => s.storyId !== story.storyId);
+    await this._addOrRemoveFavorite("remove", story);
+  }
+
+  /** Update API with favorite/not-favorite.
+   *   - newState: "add" or "remove"
+   *   - story: Story instance to make favorite / not favorite
+   * */
+
+  async _addOrRemoveFavorite(newState, story) {
+    const method = newState === "add" ? "POST" : "DELETE";
+    const token = this.loginToken;
+    await axios({
+      url: `${BASE_URL}/users/${this.username}/favorites/${story.storyId}`,
+      method: method,
+      data: { token },
+    });
+  }
+```
+
+8. Adding star icon to UI. Inside stories.js
+```js
+  // Inside generateStoryMarkup(story);
+  // if a user is logged in, show favorite/not-favorite star
+  const showStar = Boolean(currentUser);
+
+  // Inside the return html markup:
+  ${showStar ? getStarHTML(story, currentUser) : ""}
+
+/** Make favorite/not-favorite star for story */
+function getStarHTML(story, user) {
+  const isFavorite = user.isFavorite(story);
+  const starType = isFavorite ? "fas" : "far";
+  return `
+      <span class="star">
+        <i class="${starType} fa-star"></i>
+      </span>`;
+}
+```
+
+9. isFavorites is undefined. Add isFavorites to the bottom of models.js
+```js
+  /** Return true/false if given Story instance is a favorite of this user. */
+  isFavorite(story) {
+    return this.favorites.some(s => (s.storyId === story.storyId));
+  }
+```
+
+10. $storiesLists is undefined. Inside main.js, add the jQuery selector:
+```js
+// selector that finds all three story lists
+const $storiesLists = $(".stories-list");
+```
+4. Inside stories.js, iterate through currentUser.favorites ....
+```js
+
+  // if a user is logged in, show favorite/not-favorite star
+  const showStar = Boolean(currentUser);
+
+// Template for building out this functioN:
+/** Gets list of stories from server, generates their HTML, and puts on page. */
+function putStoriesOnPage() {
+  console.debug("putStoriesOnPage");
+
+  $allStoriesList.empty();
+
+  // loop through all of our stories and generate HTML for them
+  for (let story of storyList.stories) {
+    const $story = generateStoryMarkup(story);
+    $allStoriesList.append($story);
+  }
+  $allStoriesList.show();
+}
+```
+
+
+

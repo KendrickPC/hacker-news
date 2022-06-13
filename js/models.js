@@ -201,32 +201,41 @@ class User {
   }
 
   /** Add a story to the list of user favorites and update the API
-  * - story: a Story instance to add to favorites
-  */
-  static async addUserFavorite(user, id) {
-    await axios({
-      url: `${BASE_URL}/users/${user.username}/favorites/${id}`,
-      method: "POST",
-      data: { token: user.loginToken },
-    });
+   * - story: a Story instance to add to favorites
+   */
+
+   async addFavorite(story) {
+    this.favorites.push(story);
+    await this._addOrRemoveFavorite("add", story)
   }
 
   /** Remove a story to the list of user favorites and update the API
    * - story: the Story instance to remove from favorites
    */
-  static async userFavoritesDelete(user, id) {
+
+  async removeFavorite(story) {
+    this.favorites = this.favorites.filter(s => s.storyId !== story.storyId);
+    await this._addOrRemoveFavorite("remove", story);
+  }
+
+  /** Update API with favorite/not-favorite.
+   *   - newState: "add" or "remove"
+   *   - story: Story instance to make favorite / not favorite
+   * */
+
+  async _addOrRemoveFavorite(newState, story) {
+    const method = newState === "add" ? "POST" : "DELETE";
+    const token = this.loginToken;
     await axios({
-      url: `${BASE_URL}/users/${user.username}/favorites/${id}`,
-      method: "DELETE",
-      data: { token: user.loginToken },
+      url: `${BASE_URL}/users/${this.username}/favorites/${story.storyId}`,
+      method: method,
+      data: { token },
     });
   }
 
-    /** Return true/false if given Story instance is a favorite of this user. */
-  static findFavorites(story) {
-    return currentUser.favorites.some(
-      item => item.storyId === story.storyId
-    );
+  /** Return true/false if given Story instance is a favorite of this user. */
+  isFavorite(story) {
+    return this.favorites.some(s => (s.storyId === story.storyId));
   }
 
 }

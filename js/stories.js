@@ -22,9 +22,13 @@ async function getAndShowStoriesOnStart() {
 function generateStoryMarkup(story) {
   // console.debug("generateStoryMarkup", story);
 
+  // if a user is logged in, show favorite/not-favorite star
+  const showStar = Boolean(currentUser);
+
   const hostName = story.getHostName();
   return $(`
       <li id="${story.storyId}">
+        ${showStar ? getStarHTML(story, currentUser) : ""}
         <a href="${story.url}" target="a_blank" class="story-link">
           ${story.title}
         </a>
@@ -33,6 +37,17 @@ function generateStoryMarkup(story) {
         <small class="story-user">posted by ${story.username}</small>
       </li>
     `);
+}
+
+/** Make favorite/not-favorite star for story */
+function getStarHTML(story, user) {
+  console.log(user);
+  const isFavorite = user.isFavorite(story);
+  const starType = isFavorite ? "fas" : "far";
+  return `
+      <span class="star">
+        <i class="${starType} fa-star"></i>
+      </span>`;
 }
 
 /** Gets list of stories from server, generates their HTML, and puts on page. */
@@ -91,39 +106,48 @@ async function addFavoritetoList() {
   }
 }
 
-/**  see if story is a favorite and update hearts on page */
-function checkforFavoritesandUpdateUI(story) {
-  // /not sure why I had to call user on static function?
-  let heart = "";
-  if (User.findFavorites(story) === true) {
-    heart = "fas";
-  } else {
-    heart = "far";
-  }
-  return `
-      <span class="${heart} fa-heart"></i>
-      </span>`;
-}
-/**When user clicks change the heart and save the favorite/unfavorite it to the api and favorite story array*/
-async function updateFavoriteStoryOnClick(e) {
-  let parentLI = $(e.target).parent();
-  let clickedStoryId = parentLI.attr("id");
 
-  if ($(e.target).hasClass("fas")) {
-    await User.userFavoritesDelete(currentUser, clickedStoryId);
-    $(e.target).removeClass("fas").addClass("far");
-    currentUser.favorites = currentUser.favorites.filter(
-      (element) => element.storyId !== clickedStoryId
-    );
-    addFavoritetoList();
+/******************************************************************************
+ * Functionality for favorites list and starr/un-starr a story
+ */
+/** Put favorites list on page. */
+
+function putFavoritesListOnPage() {
+  console.debug("putFavoritesListOnPage");
+  $favoriteStories.empty();
+  if (currentUser.favorites.length !== 0) {
+    // iterate through currentUser.favorites:
+    for (let story of currentUser.favorites) {
+      const $favoriteStory = generateStoryMarkup(favoritedStory);
+      $favoriteStories.append($favoriteStory);
+    }
   } else {
-    await User.userFavorites(currentUser, clickedStoryId);
-    $(e.target).removeClass("far").addClass("fas");
-    const story = storyList.stories.find(
-      (element) => element.storyId === clickedStoryId
-    );
-    currentUser.favorites.push(story);
-    addFavoritetoList();
+    $favoriteStories.append("<h1>No favorite stories added</h1>");
+  }
+  $favoriteStories.show();
+}
+
+
+/** Handle favorite/un-favorite a story */
+
+async function toggleStoryFavorite(evt) {
+  console.debug("toggleStoryFavorite");
+
+  const $tgt = $(evt.target);
+  const $closestLi = $tgt.closest("li");
+  const storyId = $closestLi.attr("id");
+  const story = storyList.stories.find(s => s.storyId === storyId);
+
+  // see if the item is already favorited (checking by presence of star)
+  if ($tgt.hasClass("fas")) {
+    // currently a favorite: remove from user's fav list and change star
+    await currentUser.removeFavorite(story);
+    $tgt.closest("i").toggleClass("fas far");
+  } else {
+    // currently not a favorite: do the opposite
+    await currentUser.addFavorite(story);
+    $tgt.closest("i").toggleClass("fas far");
   }
 }
-$body.on("click", "span", updateFavoriteStoryOnClick);
+
+$storiesLists.on("click", ".star", toggleStoryFavorite);
