@@ -268,7 +268,7 @@ function putFavoritesListOnPage() {
   if (currentUser.favorites.length !== 0) {
     // iterate through currentUser.favorites:
     for (let story of currentUser.favorites) {
-      const $favoriteStory = generateStoryMarkup(favoritedStory);
+      const $favoriteStory = generateStoryMarkup(story);
       $favoriteStories.append($favoriteStory);
     }
   } else {
@@ -348,27 +348,9 @@ function getStarHTML(story, user) {
 // selector that finds all three story lists
 const $storiesLists = $(".stories-list");
 ```
-4. Inside stories.js, iterate through currentUser.favorites ....
-```js
 
-  // if a user is logged in, show favorite/not-favorite star
-  const showStar = Boolean(currentUser);
-
-// Template for building out this functioN:
-/** Gets list of stories from server, generates their HTML, and puts on page. */
-function putStoriesOnPage() {
-  console.debug("putStoriesOnPage");
-
-  $allStoriesList.empty();
-
-  // loop through all of our stories and generate HTML for them
-  for (let story of storyList.stories) {
-    const $story = generateStoryMarkup(story);
-    $allStoriesList.append($story);
-  }
-  $allStoriesList.show();
-}
-```
+11. Add $favoriteStories variable to js/main.js hideComponents() array.
 
 
-
+### Part 4: Removing Stories
+Allow logged in users to remove a story. Once a story has been deleted, remove it from the DOM and let the API know its been deleted.

@@ -118,7 +118,7 @@ function putFavoritesListOnPage() {
   if (currentUser.favorites.length !== 0) {
     // iterate through currentUser.favorites:
     for (let story of currentUser.favorites) {
-      const $favoriteStory = generateStoryMarkup(favoritedStory);
+      const $favoriteStory = generateStoryMarkup(story);
       $favoriteStories.append($favoriteStory);
     }
   } else {
