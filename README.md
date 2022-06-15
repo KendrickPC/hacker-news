@@ -401,8 +401,11 @@ function putUserStoriesOnPage() {
   $userStories.show();
 }
 ```
-  
-5. Next, add a delete icon to delete our own stories from the server.
+
+5. Hide user stories from page components when not in use:
+Inside js/main.js, add $userStories to hidePageComponents();
+
+6. Next, add a delete icon to delete our own stories from the server.
 ```js
 
 ```
