@@ -358,10 +358,51 @@ Allow logged in users to remove a story. Once a story has been deleted, remove i
 1. Let's start by creating a nav link for user stories in index.html
 ```html
 <a class="nav-link" href="#" id="nav-user-stories">user stories</a>
+
+<!-- List of stories by the user -->
+<ol id="user-stories" class="hidden stories-list"></ol>
 ```
 
 2. Make a jQuery variable #for nav-user-stories in the js/main.js file:
 
+```js
+const $navUserStories = $("#nav-user-stories");
+const $userStories = $("#user-stories");
+```
+
+3. Create a function to handle the click on user stories link:
+Inside js/nav.js:
+
+```js
+/** Show My Stories on clicking "my stories" */
+function navUserStories(evt) {
+  console.debug("navUserStories", evt);
+  hidePageComponents();
+  putUserStoriesOnPage();
+
+}
+$navUserStories.on("click", navUserStories);
+```
+
+4. Next, we need to putUserStoriesOnPage by writing our own function to handle this:
+```js
+function putUserStoriesOnPage() {
+  console.debug("putUserStoriesOnPage");
+  $userStories.empty();
+  if (currentUser.ownStories.length !== 0) {
+    for (let story of currentUser.ownStories) {
+      let $story = generateStoryMarkup(story, true);
+      $userStories.append($story);
+    } 
+  } else {
+      // loop through all of users stories and generate HTML for them
+      $$userStories.append("<h5>No stories added by user yet!</h5>");
+    }
+  $userStories.show();
+}
+```
+  
+5. Next, add a delete icon to delete our own stories from the server.
 ```js
 
 ```

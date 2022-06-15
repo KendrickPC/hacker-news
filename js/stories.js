@@ -41,7 +41,6 @@ function generateStoryMarkup(story) {
 
 /** Make favorite/not-favorite star for story */
 function getStarHTML(story, user) {
-  console.log(user);
   const isFavorite = user.isFavorite(story);
   const starType = isFavorite ? "fas" : "far";
   return `
@@ -157,20 +156,17 @@ $storiesLists.on("click", ".star", toggleStoryFavorite);
  * Functionality for list of user's own stories
  */
 
- function putUserStoriesOnPage() {
+function putUserStoriesOnPage() {
   console.debug("putUserStoriesOnPage");
-
-  $ownStories.empty();
-
-  if (currentUser.ownStories.length === 0) {
-    $ownStories.append("<h5>No stories added by user yet!</h5>");
-  } else {
-    // loop through all of users stories and generate HTML for them
+  $userStories.empty();
+  if (currentUser.ownStories.length !== 0) {
     for (let story of currentUser.ownStories) {
       let $story = generateStoryMarkup(story, true);
-      $ownStories.append($story);
+      $userStories.append($story);
+    } 
+  } else {
+      // loop through all of users stories and generate HTML for them
+      $$userStories.append("<h5>No stories added by user yet!</h5>");
     }
-  }
-
-  $ownStories.show();
+  $userStories.show();
 }
