@@ -1,3 +1,6 @@
+[Working Project Link](https://kendrickpc.github.io/hacker-news/)
+[Git Repo](https://github.com/KendrickPC/hacker-news)
+
 # How I Built This:
 
 Static Async Exlained:
