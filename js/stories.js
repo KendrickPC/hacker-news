@@ -19,7 +19,7 @@ async function getAndShowStoriesOnStart() {
  * Returns the markup for the story.
  */
 
-function generateStoryMarkup(story) {
+function generateStoryMarkup(story, showDeleteButton = false) {
   // console.debug("generateStoryMarkup", story);
 
   // if a user is logged in, show favorite/not-favorite star
@@ -28,6 +28,7 @@ function generateStoryMarkup(story) {
   const hostName = story.getHostName();
   return $(`
       <li id="${story.storyId}">
+        ${showDeleteButton ? getDeleteBtnHTML() : ""}
         ${showStar ? getStarHTML(story, currentUser) : ""}
         <a href="${story.url}" target="a_blank" class="story-link">
           ${story.title}
@@ -166,7 +167,32 @@ function putUserStoriesOnPage() {
     } 
   } else {
       // loop through all of users stories and generate HTML for them
-      $$userStories.append("<h5>No stories added by user yet!</h5>");
+      $userStories.append("<h5>No stories added by user yet!</h5>");
     }
   $userStories.show();
 }
+
+/** Handle deleting a story. */
+
+async function deleteStory(evt) {
+  console.debug("deleteStory");
+
+  const $closestLi = $(evt.target).closest("li");
+  const storyId = $closestLi.attr("id");
+
+  await storyList.removeStory(currentUser, storyId);
+
+  // re-generate story list
+  await putUserStoriesOnPage();
+}
+
+$userStories.on("click", ".trash-can", deleteStory);
+/** Make delete button HTML for story */
+
+function getDeleteBtnHTML() {
+  return `
+      <span class="trash-can">
+        <i class="fas fa-trash-alt"></i>
+      </span>`;
+}
+

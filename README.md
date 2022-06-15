@@ -400,12 +400,65 @@ function putUserStoriesOnPage() {
     }
   $userStories.show();
 }
+
+$userStories.on("click", )
 ```
 
 5. Hide user stories from page components when not in use:
 Inside js/main.js, add $userStories to hidePageComponents();
 
 6. Next, add a delete icon to delete our own stories from the server.
+Inside stories.js
 ```js
+/** Make delete button HTML for story */
+function getDeleteBtnHTML() {
+  return `
+      <span class="trash-can">
+        <i class="fas fa-trash-alt"></i>
+      </span>`;
+}
+```
 
+7. Build the removeStory function inside models.js StoryList class
+```js
+  /** Delete story from API and remove from the story lists.
+   *
+   * - user: the current User instance
+   * - storyId: the ID of the story you want to remove
+   */
+
+  async removeStory(user, storyId) {
+    const token = user.loginToken;
+    await axios({
+      url: `${BASE_URL}/stories/${storyId}`,
+      method: "DELETE",
+      data: { token: user.loginToken }
+    });
+
+    // filter out the story whose ID we are removing
+    this.stories = this.stories.filter(story => story.storyId !== storyId);
+
+    // do the same thing for the user's list of stories & their favorites
+    user.ownStories = user.ownStories.filter(s => s.storyId !== storyId);
+    user.favorites = user.favorites.filter(s => s.storyId !== storyId);
+  }
+```
+
+8. Inside stoires.js, build out the deleteStory function:
+```js
+/** Handle deleting a story. */
+
+async function deleteStory(evt) {
+  console.debug("deleteStory");
+
+  const $closestLi = $(evt.target).closest("li");
+  const storyId = $closestLi.attr("id");
+
+  await storyList.removeStory(currentUser, storyId);
+
+  // re-generate story list
+  await putUserStoriesOnPage();
+}
+
+$userStories.on("click", ".trash-can", deleteStory);
 ```
