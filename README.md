@@ -354,3 +354,14 @@ const $storiesLists = $(".stories-list");
 
 ### Part 4: Removing Stories
 Allow logged in users to remove a story. Once a story has been deleted, remove it from the DOM and let the API know its been deleted.
+
+1. Let's start by creating a nav link for user stories in index.html
+```html
+<a class="nav-link" href="#" id="nav-user-stories">user stories</a>
+```
+
+2. Make a jQuery variable #for nav-user-stories in the js/main.js file:
+
+```js
+
+```
